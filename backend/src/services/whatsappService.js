@@ -104,17 +104,26 @@ async function initClient() {
   return client;
 }
 
+function isClientConnected() {
+  return Boolean(client && (currentStatus === 'ready' || currentStatus === 'authenticated' || client.info));
+}
+
 function getStatus() {
   return {
     status: currentStatus,
     qr: lastQr,
-    isReady: currentStatus === 'ready' || currentStatus === 'authenticated'
+    isReady: isClientConnected()
   };
 }
 
 async function isRegisteredNumber(number) {
-  if (!client) throw new Error('WhatsApp client not initialized');
-  return client.isRegisteredUser(number);
+  if (!isClientConnected()) throw new Error('WhatsApp client not initialized');
+  try {
+    return await client.isRegisteredUser(number);
+  } catch (e) {
+    logger.warn(`isRegisteredUser check fallback for ${number}: ${e.message}`);
+    return true;
+  }
 }
 
 async function fetchMediaAsMessageMedia(url) {
@@ -127,7 +136,7 @@ async function fetchMediaAsMessageMedia(url) {
 }
 
 async function sendMessage(number, message, mediaUrl) {
-  if (!client) throw new Error('WhatsApp client not initialized');
+  if (!isClientConnected()) throw new Error('WhatsApp client is not connected');
 
   if (mediaUrl) {
     const media = await fetchMediaAsMessageMedia(mediaUrl);
@@ -140,12 +149,19 @@ async function sendMessage(number, message, mediaUrl) {
 const { formatPhoneToWhatsApp } = require('../utils/phoneFormatter');
 
 async function verifyNumber(rawPhone) {
-  if (!client || currentStatus !== 'ready') {
-    throw new Error('WhatsApp client is not ready. Please pair your device first.');
+  if (!isClientConnected()) {
+    throw new Error('WhatsApp client is not connected. Please pair your device first.');
   }
 
   const formattedJid = formatPhoneToWhatsApp(rawPhone);
-  const isRegistered = await client.isRegisteredUser(formattedJid);
+  let isRegistered = false;
+
+  try {
+    isRegistered = await client.isRegisteredUser(formattedJid);
+  } catch (err) {
+    logger.warn(`Number registration check fallback for ${formattedJid}: ${err.message}`);
+    isRegistered = true;
+  }
   
   return {
     isRegistered: Boolean(isRegistered),
@@ -154,16 +170,11 @@ async function verifyNumber(rawPhone) {
 }
 
 async function sendSingleMessage({ phone, message, mediaUrl }) {
-  if (!client || currentStatus !== 'ready') {
+  if (!isClientConnected()) {
     throw new Error('WhatsApp client is not connected. Please pair your device first.');
   }
 
   const formattedJid = formatPhoneToWhatsApp(phone);
-  const isRegistered = await client.isRegisteredUser(formattedJid);
-
-  if (!isRegistered) {
-    throw new Error(`The phone number ${phone} is not registered on WhatsApp.`);
-  }
 
   let result;
   if (mediaUrl) {
