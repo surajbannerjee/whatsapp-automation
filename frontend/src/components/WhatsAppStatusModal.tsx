@@ -52,6 +52,16 @@ export default function WhatsAppStatusModal() {
   const isReady = statusData?.isReady || statusData?.status === "ready" || statusData?.status === "authenticated"
   const isQrReady = !isReady && statusData?.status === "qr_ready" && !!statusData?.qr
 
+  // Automatically close scanner popup 1.5s after successful WhatsApp pairing
+  useEffect(() => {
+    if (isReady && isOpen) {
+      const timer = setTimeout(() => {
+        setIsOpen(false)
+      }, 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [isReady, isOpen])
+
   useEffect(() => {
     fetchStatus()
     // If already connected, slow down polling to 10s. If waiting for QR, poll every 2.5s.
