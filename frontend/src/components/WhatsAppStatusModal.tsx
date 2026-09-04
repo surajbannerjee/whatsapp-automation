@@ -1,10 +1,9 @@
 "use client"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import { getWhatsAppStatus, WhatsAppStatus } from "@/lib/api"
 import { QRCodeSVG } from "qrcode.react"
 import { Dialog } from "./ui/dialog"
 import { Button } from "./ui/button"
-import { Badge } from "./ui/badge"
 import { 
   CheckCircle2, 
   QrCode, 
@@ -17,18 +16,36 @@ import {
 
 export default function WhatsAppStatusModal() {
   const [statusData, setStatusData] = useState<WhatsAppStatus | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [manualLoading, setManualLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
 
-  const fetchStatus = async () => {
+  // Silent background fetch that does not trigger button loading spinner
+  const fetchStatus = useCallback(async () => {
     try {
-      setLoading(true)
       const data = await getWhatsAppStatus()
-      setStatusData(data)
+      setStatusData((prev) => {
+        // Only update state if something meaningfully changed to avoid re-renders
+        if (
+          prev?.status === data.status &&
+          prev?.isReady === data.isReady &&
+          prev?.qr === data.qr
+        ) {
+          return prev
+        }
+        return data
+      })
     } catch (err) {
       console.error("Failed to fetch WhatsApp status", err)
+    }
+  }, [])
+
+  // Manual refresh triggered by user clicking button
+  const handleManualRefresh = async () => {
+    try {
+      setManualLoading(true)
+      await fetchStatus()
     } finally {
-      setLoading(false)
+      setTimeout(() => setManualLoading(false), 500)
     }
   }
 
@@ -38,10 +55,10 @@ export default function WhatsAppStatusModal() {
   useEffect(() => {
     fetchStatus()
     // If already connected, slow down polling to 10s. If waiting for QR, poll every 2.5s.
-    const pollIntervalMs = isReady ? 10000 : isOpen ? 2000 : 3000
+    const pollIntervalMs = isReady ? 10000 : isOpen ? 2500 : 4000
     const interval = setInterval(fetchStatus, pollIntervalMs)
     return () => clearInterval(interval)
-  }, [isReady, isOpen])
+  }, [isReady, isOpen, fetchStatus])
 
   return (
     <>
@@ -160,8 +177,8 @@ export default function WhatsAppStatusModal() {
             <Button
               variant="outline"
               size="sm"
-              onClick={fetchStatus}
-              isLoading={loading}
+              onClick={handleManualRefresh}
+              isLoading={manualLoading}
               className="gap-1 text-xs h-8 border-white/10 px-3"
             >
               <RefreshCw className="w-3 h-3" /> Refresh QR
