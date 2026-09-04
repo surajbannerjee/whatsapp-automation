@@ -14,6 +14,8 @@ dist/
 .wwebjs_cache/
 **/.wwebjs_auth/
 **/.wwebjs_cache/
+.cache/
+**/.cache/
 
 # Uploads and temporary files
 uploads/

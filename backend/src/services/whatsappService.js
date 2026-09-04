@@ -15,7 +15,15 @@ async function initClient() {
     authStrategy: new LocalAuth({ clientId: 'whatsapp-automation' }),
     puppeteer: { 
       headless: process.env.WHATSAPP_HEADLESS !== 'false',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--disable-gpu'
+      ]
     }
   });
 
