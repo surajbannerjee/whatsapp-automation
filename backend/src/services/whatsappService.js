@@ -1,6 +1,7 @@
 const qrcode = require('qrcode-terminal');
 const axios = require('axios');
 const mime = require('mime-types');
+const puppeteer = require('puppeteer');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const logger = require('../utils/logger');
 
@@ -11,10 +12,21 @@ let lastQr = null;
 async function initClient() {
   if (client) return client;
 
+  let chromePath;
+  try {
+    if (typeof puppeteer.executablePath === 'function') {
+      chromePath = puppeteer.executablePath();
+      logger.info('Resolved Chrome executable path: ' + chromePath);
+    }
+  } catch (err) {
+    logger.warn('Could not automatically resolve puppeteer.executablePath: ' + err.message);
+  }
+
   client = new Client({
     authStrategy: new LocalAuth({ clientId: 'whatsapp-automation' }),
     puppeteer: { 
       headless: process.env.WHATSAPP_HEADLESS !== 'false',
+      executablePath: chromePath || undefined,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
