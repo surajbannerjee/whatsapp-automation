@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Next.js build output
+.next/
+**/next-env.d.ts
+out/
+build/
+dist/
+
+# WhatsApp Web Session & Cache (CRITICAL: Do not commit session data)
+.wwebjs_auth/
+.wwebjs_cache/
+**/.wwebjs_auth/
+**/.wwebjs_cache/
+
+# Uploads and temporary files
+uploads/
+**/uploads/*
+!**/uploads/.gitkeep
+logs/
+**/logs/*
+
+# Environment variables & secrets
+.env
+.env*.local
+**/.env
+**/.env*.local
+!.env.example
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
