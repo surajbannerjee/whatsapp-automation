@@ -49,8 +49,8 @@ export default function WhatsAppStatusModal() {
     }
   }
 
-  const isReady = statusData?.isReady || statusData?.status === "ready"
-  const isQrReady = statusData?.status === "qr_ready" && !!statusData?.qr
+  const isReady = statusData?.isReady || statusData?.status === "ready" || statusData?.status === "authenticated"
+  const isQrReady = !isReady && statusData?.status === "qr_ready" && !!statusData?.qr
 
   useEffect(() => {
     fetchStatus()

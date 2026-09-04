@@ -22,8 +22,12 @@ async function initClient() {
     logger.warn('Could not automatically resolve puppeteer.executablePath: ' + err.message);
   }
 
+  const path = require('path');
   client = new Client({
-    authStrategy: new LocalAuth({ clientId: 'whatsapp-automation' }),
+    authStrategy: new LocalAuth({ 
+      clientId: 'whatsapp-automation',
+      dataPath: path.resolve(__dirname, '../../.wwebjs_auth')
+    }),
     webVersionCache: {
       type: 'remote',
       remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html'
@@ -53,6 +57,11 @@ async function initClient() {
     qrcode.generate(qr, { small: true });
   });
 
+  client.on('loading_screen', (percent, message) => {
+    logger.info(`WhatsApp sync: ${percent}% - ${message}`);
+    currentStatus = 'authenticated';
+  });
+
   client.on('authenticated', () => {
     currentStatus = 'authenticated';
     lastQr = null;
@@ -74,6 +83,11 @@ async function initClient() {
     currentStatus = 'disconnected';
     lastQr = null;
     logger.warn('WhatsApp client disconnected: ' + reason);
+    // Auto-reinitialize after unexpected disconnect
+    setTimeout(() => {
+      client = null;
+      initClient().catch(err => logger.error('Re-initialization failed: ' + err.message));
+    }, 5000);
   });
 
   // Listen to incoming messages for automatic thank you auto-reply
@@ -94,7 +108,7 @@ function getStatus() {
   return {
     status: currentStatus,
     qr: lastQr,
-    isReady: currentStatus === 'ready'
+    isReady: currentStatus === 'ready' || currentStatus === 'authenticated'
   };
 }
 
