@@ -34,7 +34,7 @@ export default function WhatsAppStatusModal() {
 
   useEffect(() => {
     fetchStatus()
-    const interval = setInterval(fetchStatus, 3500)
+    const interval = setInterval(fetchStatus, 1500)
     return () => clearInterval(interval)
   }, [])
 
@@ -59,12 +59,12 @@ export default function WhatsAppStatusModal() {
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
             </>
           ) : (
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-slate-500"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500 animate-pulse"></span>
           )}
         </span>
 
         <span className="text-xs font-semibold text-slate-200 group-hover:text-white transition-colors">
-          {isReady ? "WhatsApp Online" : isQrReady ? "Pair Device (QR)" : "Engine Connecting..."}
+          {isReady ? "WhatsApp Online" : isQrReady ? "Pair Device (QR Ready)" : "Starting Engine..."}
         </span>
 
         <QrCode className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-400 transition-colors" />
@@ -128,9 +128,11 @@ export default function WhatsAppStatusModal() {
           ) : (
             <div className="text-center py-7 px-4 bg-slate-950/60 rounded-2xl border border-white/[0.08]">
               <RefreshCw className="w-7 h-7 text-emerald-400 animate-spin mx-auto mb-2.5" />
-              <h3 className="text-xs font-semibold text-white">Generating Pairing QR Code...</h3>
-              <p className="text-[11px] text-slate-400 mt-1">
-                Connecting to WhatsApp socket engine. Please wait a moment.
+              <h3 className="text-xs font-semibold text-white">Starting WhatsApp Engine...</h3>
+              <p className="text-[11px] text-slate-400 mt-1 max-w-xs mx-auto">
+                {statusData?.status === "initializing" 
+                  ? "Spinning up cloud Chromium browser. Free cloud instances take ~30-40 seconds on cold start."
+                  : "Connecting to WhatsApp socket engine. Please wait a moment."}
               </p>
             </div>
           )}
@@ -142,9 +144,13 @@ export default function WhatsAppStatusModal() {
                 <span className="flex items-center gap-1 text-emerald-400 font-semibold text-xs">
                   <Wifi className="w-3.5 h-3.5" /> Socket Online
                 </span>
-              ) : (
+              ) : isQrReady ? (
                 <span className="flex items-center gap-1 text-amber-400 font-semibold text-xs">
-                  <WifiOff className="w-3.5 h-3.5" /> Ready to scan
+                  <Wifi className="w-3.5 h-3.5" /> QR Code Ready
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-sky-400 font-semibold text-xs">
+                  <WifiOff className="w-3.5 h-3.5" /> Initializing (~30s)
                 </span>
               )}
             </div>
