@@ -32,14 +32,16 @@ export default function WhatsAppStatusModal() {
     }
   }
 
-  useEffect(() => {
-    fetchStatus()
-    const interval = setInterval(fetchStatus, 1500)
-    return () => clearInterval(interval)
-  }, [])
-
   const isReady = statusData?.isReady || statusData?.status === "ready"
   const isQrReady = statusData?.status === "qr_ready" && !!statusData?.qr
+
+  useEffect(() => {
+    fetchStatus()
+    // If already connected, slow down polling to 10s. If waiting for QR, poll every 2.5s.
+    const pollIntervalMs = isReady ? 10000 : isOpen ? 2000 : 3000
+    const interval = setInterval(fetchStatus, pollIntervalMs)
+    return () => clearInterval(interval)
+  }, [isReady, isOpen])
 
   return (
     <>
