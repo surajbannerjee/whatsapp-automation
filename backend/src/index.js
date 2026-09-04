@@ -32,6 +32,15 @@ app.use('/api', autoReplyRouter);
 app.use('/api/leads', leadFinderRouter);
 app.use('/api/upload-media', uploadMediaRouter);
 
+// Lightweight Health / Keep-Alive Ping Endpoint for Cron Jobs
+app.get('/api/ping', (req, res) => {
+  return res.status(200).json({ status: 'active', timestamp: Date.now() });
+});
+
+app.get('/health', (req, res) => {
+  return res.status(200).send('OK');
+});
+
 // WhatsApp client status endpoint (disabled cache for real-time polling)
 app.get('/api/status', (req, res) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
