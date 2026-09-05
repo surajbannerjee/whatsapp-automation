@@ -1,15 +1,15 @@
-# 🚀 WhatsApp Automation & Local Lead Generation — Full Technical Architecture & Setup Guide
+# 🚀 WhatsApp Automation & Local Lead Generation — Full JavaScript (JS/JSX) Architecture & Setup Guide
 
-> **Purpose:** This document provides a complete technical blueprint, library inventory, system architecture, directory tree, and a step-by-step guide to building and running this application from scratch purely for local development.
+> **Purpose:** This document provides a complete technical blueprint, library inventory, system architecture, directory tree, and a step-by-step guide to building and running this application from scratch using **pure JavaScript (JS/JSX)** for local development (no TypeScript).
 
 ---
 
 ## 📑 Table of Contents
 1. [Tech Stack & Dependency Inventory](#1-tech-stack--dependency-inventory)
 2. [System Architecture & Lifecycle Workflow](#2-system-architecture--lifecycle-workflow)
-3. [Complete Directory Structure](#3-complete-directory-structure)
+3. [Complete Directory Structure (Pure JavaScript)](#3-complete-directory-structure-pure-javascript)
 4. [Core Features & Engineering Logic](#4-core-features--engineering-logic)
-5. [Step-by-Step Guide to Building From Scratch](#5-step-by-step-guide-to-building-from-scratch)
+5. [Step-by-Step Guide to Building From Scratch (Pure JS)](#5-step-by-step-guide-to-building-from-scratch-pure-js)
 6. [Local Execution & Environment Setup](#6-local-execution--environment-setup)
 7. [Troubleshooting & Best Practices](#7-troubleshooting--best-practices)
 
@@ -17,27 +17,27 @@
 
 ## 1. Tech Stack & Dependency Inventory
 
-### 🔹 Frontend (Client Dashboard):
+### 🔹 Frontend (Client Dashboard — Pure JS/JSX):
 | Package / Technology | Version | Purpose |
 | :--- | :--- | :--- |
-| **Next.js (App Router)** | `^14.0.0` | React server-side rendering, routing, and modern frontend framework |
-| **React & React DOM** | `^18.2.0` | Declarative UI component architecture and state management |
-| **Javascript** | `^5.0.0` | Static typing, interface definitions, and compile-time validation |
+| **Next.js (App Router, JS/JSX)** | `^14.0.0` | React server-side rendering, routing, and modern frontend framework using JavaScript |
+| **React & React DOM** | `^18.2.0` | Declarative UI component architecture and state management in `.jsx` files |
+| **JavaScript (ES6+)** | Modern | Clean, dynamic, and standard JavaScript syntax without TypeScript compilation |
 | **Tailwind CSS** | `^3.3.0` | Modern Web3-inspired dark UI, glassmorphism, and responsive layout styling |
 | **Framer Motion** | `^10.16.4` | Smooth interactive animations, micro-interactions, and collapsible transitions |
-| **Lucide React** | `^0.292.0` | High-quality icon set for status badges, buttons, and navigation |
+| **Lucide React** | `^0.292.0` | Modern icon set for buttons, navigation, status pills, and modals |
 | **qrcode.react** | `^3.1.0` | Renders dynamic real-time SVG QR codes directly in the pairing modal |
 | **Axios** | `^1.6.0` | HTTP client for interacting with the backend Express REST API |
 | **PapaParse** | `^5.4.1` | In-browser CSV file parser for bulk contact importing |
 | **Canvas Confetti** | `^1.9.0` | Visual celebration animation on campaign completion |
-| **clsx & tailwind-merge** | `^2.x` | Utility for merging dynamic Tailwind utility classes |
+| **clsx & tailwind-merge** | `^2.x` | Helper utility for conditionally merging Tailwind CSS classes |
 
-### 🔹 Backend (Engine & Automation Core):
+### 🔹 Backend (Node.js & Express — Pure CommonJS):
 | Package / Technology | Version | Purpose |
 | :--- | :--- | :--- |
-| **Node.js** | `>= 18.x` | JavaScript runtime environment |
-| **Express.js** | `^4.18.2` | RESTful API server routing and middleware pipeline |
-| **whatsapp-web.js** | `github:pedroslopez/whatsapp-web.js` | Reverse-engineered WhatsApp Web protocol client with headless automation |
+| **Node.js** | `>= 18.x` | JavaScript server runtime environment |
+| **Express.js** | `^4.18.2` | RESTful API server routing, endpoints, and middleware pipeline |
+| **whatsapp-web.js** | `github:pedroslopez/whatsapp-web.js` | WhatsApp Web socket automation engine |
 | **Puppeteer** | `^22.x / ^24.x` | Headless Chrome/Chromium automation browser controller |
 | **LocalAuth (wwebjs)** | Built-in | Persists WhatsApp authenticated session tokens to local disk (`.wwebjs_auth/`) |
 | **Serper API (Google Maps)** | REST API | Scrapes real verified business leads with phone numbers by category and city |
@@ -72,15 +72,15 @@ graph TD
 
 ---
 
-## 3. Complete Directory Structure
+## 3. Complete Directory Structure (Pure JavaScript)
 
 ```text
 whatsapp-automation/
 ├── .env                          # Root environment variables
 ├── README.md                     # High-level overview
-├── LOCAL_PROJECT_GUIDE.md        # Complete English architecture and setup guide
+├── LOCAL_PROJECT_GUIDE.md        # Complete JavaScript setup guide
 │
-├── backend/                      # Node.js + Express API Backend
+├── backend/                      # Node.js + Express API Backend (CommonJS)
 │   ├── .puppeteerrc.cjs          # Puppeteer cache configuration
 │   ├── package.json              # Backend dependencies and scripts
 │   ├── logs/
@@ -107,58 +107,57 @@ whatsapp-automation/
 │           ├── logger.js         # Timestamped file and console logger
 │           └── phoneFormatter.js # Phone normalizer (adds country code + @c.us)
 │
-└── frontend/                     # Next.js 14 Web Application
+└── frontend/                     # Next.js 14 Web Application (Pure JS / JSX)
     ├── package.json              # Frontend dependencies and build scripts
     ├── tailwind.config.js        # Web3 dark theme, glow effects, and color tokens
-    ├── tsconfig.json             # TypeScript configuration
+    ├── jsconfig.json             # JavaScript alias configuration (@/*)
     └── src/
         ├── app/
-        │   ├── layout.tsx        # Root HTML layout with Google Inter typography
+        │   ├── layout.jsx        # Root HTML layout with Google Inter typography
         │   ├── globals.css       # Custom scrollbars, glassmorphism, and neon glow utility classes
-        │   ├── page.tsx          # Root redirect to /dashboard
+        │   ├── page.jsx          # Root redirect to /dashboard
         │   └── dashboard/
-        │       └── page.tsx      # Main dashboard with segmented Tri-Mode switcher
+        │       └── page.jsx      # Main dashboard with segmented Tri-Mode switcher
         ├── components/
-        │   ├── AutoReplyManager.tsx       # Live auto-reply settings, logs, and cooldowns
-        │   ├── CampaignControls.tsx       # Bulk blast progress bar, stats, and controls
-        │   ├── ContactsTable.tsx          # Contact preview, editing, and CSV display
-        │   ├── CSVUploader.tsx            # Drag-and-drop CSV importer
-        │   ├── FloatingWhatsAppSimulator.tsx # Real-time floating mobile phone preview
-        │   ├── LeadFinderModal.tsx        # Google Maps lead extraction modal
-        │   ├── MediaUploader.tsx          # Image & document attachment interface
-        │   ├── MessageEditor.tsx          # Template composer with tag replacement
-        │   ├── SingleMessageSender.tsx    # Single direct message dispatcher
-        │   ├── WhatsAppPreview.tsx        # Message rendering card
-        │   ├── WhatsAppStatusModal.tsx    # QR scanner, session reset, and status modal
-        │   └── ui/                        # Reusable buttons, inputs, dialogs, badges
+        │   ├── AutoReplyManager.jsx       # Live auto-reply settings, logs, and cooldowns
+        │   ├── CampaignControls.jsx       # Bulk blast progress bar, stats, and controls
+        │   ├── ContactsTable.jsx          # Contact preview, editing, and CSV display
+        │   ├── CSVUploader.jsx            # Drag-and-drop CSV importer
+        │   ├── FloatingWhatsAppSimulator.jsx # Real-time floating mobile phone preview
+        │   ├── LeadFinderModal.jsx        # Google Maps lead extraction modal
+        │   ├── MediaUploader.jsx          # Image & document attachment interface
+        │   ├── MessageEditor.jsx          # Template composer with tag replacement
+        │   ├── SingleMessageSender.jsx    # Single direct message dispatcher
+        │   ├── WhatsAppPreview.jsx        # Message rendering card
+        │   ├── WhatsAppStatusModal.jsx    # QR scanner, session reset, and status modal
+        │   └── ui/                        # Reusable buttons, inputs, dialogs, badges (.jsx)
         ├── config/
-        │   └── categoryTemplates.ts       # 15+ pre-written marketing templates
-        ├── lib/
-        │   └── api.ts                     # Axios API client functions with extended timeouts
-        └── types/
+        │   └── categoryTemplates.js       # 15+ pre-written marketing templates
+        └── lib/
+            └── api.js                     # Axios API client helper functions
 ```
 
 ---
 
 ## 4. Core Features & Engineering Logic
 
-### 1. Direct Single Dispatch
+### 1. Direct Single Dispatch (`SingleMessageSender.jsx`)
 - Sends WhatsApp messages instantly to any number without saving the contact in your phone address book.
-- Automatically handles variable replacement: `{{name}}` with recipient name and `{{phone}}` with phone number.
+- Automatically replaces variables: `{{name}}` with recipient name and `{{phone}}` with phone number.
 - Fast optimistic verification fallback prevents UI locks.
 
-### 2. Bulk Blast Campaign Engine with Anti-Ban Shield
+### 2. Bulk Blast Campaign Engine (`CampaignControls.jsx`)
 - Accepts parsed CSV files or leads imported directly from the Google Maps Lead Finder.
 - **Anti-Ban Protection**: Dispatches messages sequentially with randomized delays of **25 to 45 seconds** between recipients.
 - Real-time campaign tracking via polling `GET /api/campaigns/:id`.
 
-### 3. Local Lead Finder (Google Maps Integration)
+### 3. Local Lead Finder (`LeadFinderModal.jsx`)
 - Connects to Serper.dev Places API (`POST https://google.serper.dev/maps`).
 - Queries target categories (e.g. `Bakery`, `Gym`, `Real Estate`, `Dentist`) across specified locations.
 - Extracts verified phone numbers, business names, addresses, ratings, and reviews.
 - Allows 1-click import into the Bulk Blast contacts queue with matching category outreach templates.
 
-### 4. Smart Auto-Reply Engine
+### 4. Smart Auto-Reply Engine (`AutoReplyManager.jsx`)
 - Intercepts incoming messages and automatically replies with a customizable portfolio or introductory template.
 - **24-Hour Cooldown Filter**: Prevents repetitive loops by ensuring each unique contact receives only one automated response within the specified cooldown window.
 - **Historical Chat Filter**: Disregards historical unread messages synced upon initial login, responding only to live inbound traffic.
@@ -166,10 +165,10 @@ whatsapp-automation/
 
 ---
 
-## 5. Step-by-Step Guide to Building From Scratch
+## 5. Step-by-Step Guide to Building From Scratch (Pure JS)
 
 ### Step 1: Initialize Root Directory & Environment
-Create a root folder and a `.env` file:
+Create the project root folder and a `.env` file:
 ```bash
 mkdir whatsapp-automation
 cd whatsapp-automation
@@ -186,7 +185,7 @@ SERPER_API_KEY=your_serper_dev_api_key_here
 
 ---
 
-### Step 2: Initialize & Configure Backend
+### Step 2: Initialize & Configure Backend (JavaScript)
 ```bash
 mkdir backend
 cd backend
@@ -209,17 +208,27 @@ Configure scripts in `backend/package.json`:
 
 ---
 
-### Step 3: Initialize & Configure Frontend (Next.js 14)
-From the root directory:
+### Step 3: Initialize & Configure Frontend (Next.js 14 in Pure JavaScript)
+From the project root directory, run `create-next-app` with the `--js` flag:
 ```bash
-npx create-next-app@14 frontend --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm
+npx create-next-app@14 frontend --js --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm
 cd frontend
 ```
 
 Install frontend dependencies:
 ```bash
 npm install axios framer-motion lucide-react qrcode.react papaparse canvas-confetti clsx tailwind-merge
-npm install --save-dev @types/papaparse @types/canvas-confetti
+```
+
+Create `frontend/jsconfig.json` for clean path aliases:
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
 ```
 
 ---
@@ -263,4 +272,4 @@ npm run dev
    - Use variable personalization (`{{name}}`) so every outbound message is unique.
 
 ---
-*Created for Suraj Banerjee — WhatsApp Automation Suite.*
+*Created for Suraj Banerjee — WhatsApp Automation Suite (Pure JavaScript Edition).*
