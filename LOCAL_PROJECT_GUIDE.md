@@ -1,188 +1,205 @@
-# 🚀 WhatsApp Automation & Lead Generation — Full Project Architecture & Local Setup Guide
+# 🚀 WhatsApp Automation & Local Lead Generation — Full Technical Architecture & Setup Guide
 
-> **উদ্দেশ্য:** এই ডকুমেন্টে প্রজেক্টটিতে ব্যবহৃত সমস্ত টেকনোলজি, লাইব্রেরি, আর্কিটেকচার, ফাইল স্ট্রাকচার এবং স্ক্র্যাচ থেকে সম্পূর্ণ নতুন লোকাল প্রজেক্ট সেটআপ করার জন্য পুঙ্খানুপুঙ্খ গাইড বিস্তারিত দেওয়া হলো।
-
----
-
-## 📑 সূচিপত্র (Table of Contents)
-1. [ব্যবহৃত প্রযুক্তি ও লাইব্রেরিসমূহ (Tech Stack & Libraries)](#1-ব্যবহৃত-প্রযুক্তি-ও-লাইব্রেরিসমূহ-tech-stack--libraries)
-2. [সিস্টেম আর্কিটেকচার ও ওয়ার্কফ্লো (System Architecture & Workflow)](#2-সিস্টেম-আর্কিটেকচার-ও-ওয়ার্কফ্লো-system-architecture--workflow)
-3. [প্রজেক্ট ফোল্ডার স্ট্রাকচার (Directory Structure)](#3-প্রজেক্ট-ফোল্ডার-স্ট্রাকচার-directory-structure)
-4. [ফিচারসমূহ ও তাদের কাজের ধরন (Key Features Breakdown)](#4-ফিচারসমূহ-ও-তাদের-কাজের-ধরন-key-features-breakdown)
-5. [স্ক্র্যাচ থেকে নতুন প্রজেক্ট তৈরির স্টেপ-বাই-স্টেপ গাইড (Step-by-Step Local Setup)](#5-স্ক্র্যাচ-থেকে-নতুন-প্রজেক্ট-তৈরির-স্টেপ-বাই-স্টেপ-গাইড-step-by-step-local-setup)
-6. [জরুরি কনফিগারেশন ও বেস্ট প্র্যাকটিস (Critical Configurations & Tips)](#6-জরুরি-কনফিগারেশন-ও-বেস্ট-প্র্যাকটিস-critical-configurations--tips)
+> **Purpose:** This document provides a complete technical blueprint, library inventory, system architecture, directory tree, and a step-by-step guide to building and running this application from scratch purely for local development.
 
 ---
 
-## 1. ব্যবহৃত প্রযুক্তি ও লাইব্রেরিসমূহ (Tech Stack & Libraries)
+## 📑 Table of Contents
+1. [Tech Stack & Dependency Inventory](#1-tech-stack--dependency-inventory)
+2. [System Architecture & Lifecycle Workflow](#2-system-architecture--lifecycle-workflow)
+3. [Complete Directory Structure](#3-complete-directory-structure)
+4. [Core Features & Engineering Logic](#4-core-features--engineering-logic)
+5. [Step-by-Step Guide to Building From Scratch](#5-step-by-step-guide-to-building-from-scratch)
+6. [Local Execution & Environment Setup](#6-local-execution--environment-setup)
+7. [Troubleshooting & Best Practices](#7-troubleshooting--best-practices)
 
-### 🔹 ফ্রন্টএন্ড (Frontend Stack):
-| টেকনোলজি / লাইব্রেরি | সংস্করণ | ব্যবহারের উদ্দেশ্য |
+---
+
+## 1. Tech Stack & Dependency Inventory
+
+### 🔹 Frontend (Client Dashboard):
+| Package / Technology | Version | Purpose |
 | :--- | :--- | :--- |
-| **Next.js (App Router)** | `^14.0.0` | React-ভিত্তিক ফ্রন্টএন্ড ফ্রেমওয়ার্ক ও ড্যাশবোর্ড রেন্ডারিং |
-| **React & React DOM** | `^18.2.0` | UI কম্পোনেন্ট ম্যানেজমেন্ট ও স্টেট হ্যান্ডলিং |
-| **TypeScript** | `^5.0.0` | টাইপ-সেফ কোডিং ও এরর প্রতিরোধ |
-| **Tailwind CSS** | `^3.3.0` | ডার্ক Web3 নিয়ন ও গ্লাস-মরফিজম (Glassmorphism) স্টাইলিং |
-| **Framer Motion** | `^10.16.4` | স্মুথ ইন্টারঅ্যাক্টিভ অ্যানিমেশন ও ট্রানজিশন |
-| **Lucide React** | `^0.292.0` | মডার্ন আইকন সেট (Icons) |
-| **qrcode.react** | `^3.1.0` | ব্রাউজার ড্যাশবোর্ডে রিয়েল-টাইম WhatsApp QR কোড SVG রেন্ডার করা |
-| **Axios** | `^1.6.0` | ব্যাকএন্ড REST API-এর সাথে কমিউনিকেশন |
-| **PapaParse** | `^5.4.1` | CSV ফাইল পার্স করে ফোন নম্বর ও নাম এক্সট্র্যাক্ট করা |
-| **Canvas Confetti** | `^1.9.0` | ক্যাম্পেইন সফল হলে কনফেটি অ্যানিমেশন দেখানো |
+| **Next.js (App Router)** | `^14.0.0` | React server-side rendering, routing, and modern frontend framework |
+| **React & React DOM** | `^18.2.0` | Declarative UI component architecture and state management |
+| **Javascript** | `^5.0.0` | Static typing, interface definitions, and compile-time validation |
+| **Tailwind CSS** | `^3.3.0` | Modern Web3-inspired dark UI, glassmorphism, and responsive layout styling |
+| **Framer Motion** | `^10.16.4` | Smooth interactive animations, micro-interactions, and collapsible transitions |
+| **Lucide React** | `^0.292.0` | High-quality icon set for status badges, buttons, and navigation |
+| **qrcode.react** | `^3.1.0` | Renders dynamic real-time SVG QR codes directly in the pairing modal |
+| **Axios** | `^1.6.0` | HTTP client for interacting with the backend Express REST API |
+| **PapaParse** | `^5.4.1` | In-browser CSV file parser for bulk contact importing |
+| **Canvas Confetti** | `^1.9.0` | Visual celebration animation on campaign completion |
+| **clsx & tailwind-merge** | `^2.x` | Utility for merging dynamic Tailwind utility classes |
 
-### 🔹 ব্যাকএন্ড (Backend Stack):
-| টেকনোলজি / লাইব্রেরি | সংস্করণ | ব্যবহারের উদ্দেশ্য |
+### 🔹 Backend (Engine & Automation Core):
+| Package / Technology | Version | Purpose |
 | :--- | :--- | :--- |
-| **Node.js** | `>= 18.x` | সার্ভার রানটাইম এনভায়রনমেন্ট |
-| **Express.js** | `^4.18.2` | REST API সার্ভার তৈরি ও রাউটিং |
-| **whatsapp-web.js** | `github:pedroslopez/whatsapp-web.js` | WhatsApp Web সকেট প্রোটোকল হ্যান্ডলিং ও অটোমেশন |
-| **Puppeteer** | `^22.x / ^24.x` | হেডলেস ক্রোমিয়াম ব্রাউজার কন্ট্রোল ও সেশন মেইনটেইন |
-| **LocalAuth (wwebjs)** | Built-in | সেশন ডেটা লোকাল ডিস্কে সেভ রাখা (যাতে প্রতিবার QR স্ক্যান না করতে হয়) |
-| **Serper API (Google Maps)** | REST API | গুগল ম্যাপস থেকে লোকাল শপ/বিজনেসের ভেরিফায়েড ফোন নম্বর ও লিড সংগ্রহ |
-| **Multer** | `^1.4.5` | ইমেজ/পিডিএফ ফাইল আপলোড হ্যান্ডলিং |
-| **Mime-Types** | `^2.1.35` | ফাইল টাইপ ও এক্সটেনশন স্বয়ংক্রিয়ভাবে ডিটেক্ট করা |
-| **Dotenv & Cors** | Latest | এনভায়রনমেন্ট ভেরিয়েবল ও ক্রস-অরিজিন পলিসি কনফিগারেশন |
-| **qrcode-terminal** | `^0.12.0` | ব্যাকএন্ড কনসোল/টার্মিনালেও QR কোড প্রিন্ট করা |
+| **Node.js** | `>= 18.x` | JavaScript runtime environment |
+| **Express.js** | `^4.18.2` | RESTful API server routing and middleware pipeline |
+| **whatsapp-web.js** | `github:pedroslopez/whatsapp-web.js` | Reverse-engineered WhatsApp Web protocol client with headless automation |
+| **Puppeteer** | `^22.x / ^24.x` | Headless Chrome/Chromium automation browser controller |
+| **LocalAuth (wwebjs)** | Built-in | Persists WhatsApp authenticated session tokens to local disk (`.wwebjs_auth/`) |
+| **Serper API (Google Maps)** | REST API | Scrapes real verified business leads with phone numbers by category and city |
+| **Multer** | `^1.4.5` | Multipart form-data parser for image and PDF file uploads |
+| **Mime-Types** | `^2.1.35` | Automatic MIME type detection for dynamic media dispatch |
+| **Dotenv & Cors** | Latest | Environment variable loading and Cross-Origin Resource Sharing control |
+| **qrcode-terminal** | `^0.12.0` | Prints live ASCII QR codes in the backend terminal console |
 
 ---
 
-## 2. সিস্টেম আর্কিটেকচার ও ওয়ার্কফ্লো (System Architecture & Workflow)
+## 2. System Architecture & Lifecycle Workflow
 
 ```mermaid
 graph TD
-    User([User Phone WhatsApp]) <-->|QR Scan / Live Socket| WWeb[whatsapp-web.js / Puppeteer]
-    WWeb <--> Back[Express Backend Engine :4000]
-    Back <-->|REST API JSON| Front[Next.js 14 Frontend :3000]
-    Back <--> Serper[Serper.dev Google Maps API]
-    Back <--> LocalStorage[(LocalAuth Session & Cooldowns)]
+    UserPhone([User WhatsApp Mobile App]) <-->|QR Code Scan / Socket| WWeb[whatsapp-web.js Client]
+    WWeb <--> Puppeteer[Puppeteer Chrome Instance]
+    Puppeteer <--> Backend[Express API Server :4000]
+    Backend <-->|JSON REST API| Frontend[Next.js 14 Dashboard :3000]
+    Backend <--> Serper[Google Maps Places API - Serper.dev]
+    Backend <--> LocalAuthStore[(LocalAuth Disk Session: .wwebjs_auth)]
 ```
 
-1. **ইনিশিয়ালাইজেশন**: ব্যাকএন্ড চালু হলে `chromeFinder.js` আপনার পিসির ইনস্টল করা Google Chrome (`chrome.exe`) বা Puppeteer ক্রোমিয়াম ডিটেক্ট করে Puppeteer লঞ্চ করে।
-2. **লগইন হ্যান্ডশেক (QR Sync)**: ব্রাউজারে WhatsApp Web লোড হলে একটি ইউনিক QR কোড পাওয়া যায়, যা ফ্রন্টএন্ডের `/api/status` এন্ডপয়েন্টে পাঠানো হয়। ইউজার ফোনে স্ক্যান করার পর সেশনটি `.wwebjs_auth/` ফোল্ডারে সেভ থাকে।
-3. **মেসেজ ডিসপ্যাচ**:
-   - **Direct Single**: সাথে সাথে রিয়েল-টাইমে পাঠানো হয়।
-   - **Bulk Blast**: ব্যান এড়ানোর জন্য ২৫-৪৫ সেকেন্ড র‍্যান্ডম হিউম্যান-লাইক ডিলে দিয়ে প্রতিটি নাম পারসোনালাইজ করে পাঠানো হয়।
-   - **Auto-Reply**: কোনো ইউজার ইনবাউন্ড মেসেজ পাঠালে ২৪ ঘণ্টার কুলডাউন বজায় রেখে স্বয়ংক্রিয় থ্যাঙ্ক ইউ মেসেজ যায়।
-   - **Lead Finder**: নিশ (যেমন: Cake Shop) ও লোকেশন (যেমন: Garia, Kolkata) দিয়ে সার্চ দিলে গুগল ম্যাপস থেকে ফোন নম্বর স্ক্র্যাপ করে সরাসরি বাল্ক লিস্টে ইমপোর্ট করে।
+### Lifecycle Phases:
+1. **Startup & Chrome Discovery**: The backend calls `chromeFinder.js` to locate an installed browser binary (e.g. `C:\Program Files\Google\Chrome\Application\chrome.exe` on Windows or `/usr/bin/google-chrome` on Linux).
+2. **Session Authentication**: `LocalAuth` checks `.wwebjs_auth/` for a saved session. If absent, the `qr` event generates a pairing string displayed in terminal and frontend modal.
+3. **Socket Ready State**: Once authenticated, chat models synchronize. When the `ready` event fires, the socket is fully armed for message transmission.
+4. **Message Dispatch Pipeline**:
+   - **Direct Single Dispatch**: Immediate transmission with parameter replacement (`{{name}}`, `{{phone}}`).
+   - **Bulk Campaigns**: Batch queue with random human pacing (25–45s delays) to prevent account bans.
+   - **Auto-Reply Service**: Responds to live inbound messages while maintaining a 24-hour per-contact cooldown.
+   - **Lead Generation**: Queries Google Maps for businesses and formats phone numbers to WhatsApp international format (`91XXXXXXXXXX@c.us`).
 
 ---
 
-## 3. প্রজেক্ট ফোল্ডার স্ট্রাকচার (Directory Structure)
+## 3. Complete Directory Structure
 
 ```text
 whatsapp-automation/
-├── .env                          # গ্লোবাল এনভায়রনমেন্ট ভেরিয়েবল
-├── README.md                     # প্রজেক্ট ওভারভিউ
-├── LOCAL_PROJECT_GUIDE.md        # সম্পূর্ণ লোকাল সেটআপ গাইড
+├── .env                          # Root environment variables
+├── README.md                     # High-level overview
+├── LOCAL_PROJECT_GUIDE.md        # Complete English architecture and setup guide
 │
-├── backend/                      # নোডজেএস এক্সপ্রেস ব্যাকএন্ড
-│   ├── .puppeteerrc.cjs          # পাপেটিয়ার কনফিগ
-│   ├── package.json              # ব্যাকএন্ড ডিপেনডেন্সিসমূহ
+├── backend/                      # Node.js + Express API Backend
+│   ├── .puppeteerrc.cjs          # Puppeteer cache configuration
+│   ├── package.json              # Backend dependencies and scripts
 │   ├── logs/
-│   │   └── whatsapp.log          # রিয়েল-টাইম লগিং ফাইল
-│   ├── uploads/                  # মিডিয়া আপলোড স্টোরেজ (ইমেজ/পিডিএফ)
-│   ├── .wwebjs_auth/             # লোকাল হোয়াটসঅ্যাপ লগইন সেশন (LocalAuth)
+│   │   └── whatsapp.log          # Persistent server and automation logs
+│   ├── uploads/                  # Temporary media file storage (images, PDFs)
+│   ├── .wwebjs_auth/             # WhatsApp session credentials (LocalAuth)
 │   └── src/
-│       ├── index.js              # এক্সপ্রেস সার্ভার এন্ট্রি পয়েন্ট
+│       ├── index.js              # Server entry point with global error protection
 │       ├── config/
-│       │   └── autoReplyConfig.json # অটো-রিপ্লাই টেমপ্লেট ও কুলডাউন কনফিগ
+│       │   └── autoReplyConfig.json # Auto-reply template, cooldown, and toggle state
 │       ├── routes/
-│       │   ├── autoReply.js      # অটো-রিপ্লাই রাউটস
-│       │   ├── leadFinder.js     # গুগল ম্যাপস লিড স্ক্র্যাপার রাউটস
-│       │   ├── sendBulk.js       # বাল্ক ক্যাম্পেইন প্রসেসিং রাউটস
-│       │   ├── singleMessage.js  # ডাইরেক্ট সিঙ্গেল মেসেজ রাউটস
-│       │   └── uploadMedia.js    # ফাইল আপলোড রাউটস
+│       │   ├── autoReply.js      # Auto-reply CRUD & cooldown clearance endpoints
+│       │   ├── leadFinder.js     # Google Maps lead search and CSV exporter
+│       │   ├── sendBulk.js       # Bulk campaign queue and execution handler
+│       │   ├── singleMessage.js  # Single direct message and verification endpoints
+│       │   └── uploadMedia.js    # Multer media upload handler
 │       ├── services/
-│       │   ├── autoReplyService.js # অটো-রিপ্লাই লজিক ও কুলডাউন হ্যান্ডলার
-│       │   ├── campaignManager.js  # বাল্ক ক্যাম্পেইন স্ট্যাটাস ট্র্যাকার
-│       │   └── whatsappService.js  # মেইন হোয়াটসঅ্যাপ সকেট সার্ভিস
+│       │   ├── autoReplyService.js # Inbound message handler & cooldown manager
+│       │   ├── campaignManager.js  # In-memory bulk campaign state tracker
+│       │   └── whatsappService.js  # Core WhatsApp Web socket service
 │       └── utils/
-│           ├── chromeFinder.js   # সিস্টেম ক্রোম ডিটেকশন ইউটিলিটি
-│           ├── delay.js          # র‍্যান্ডম ডিলে প্রমিজ
-│           ├── logger.js         # কনসোল ও ফাইল লগার
-│           └── phoneFormatter.js # ফোন নম্বর ফরম্যাটার (৯১ প্রিফিক্স ও @c.us)
+│           ├── chromeFinder.js   # Automatic system Chrome/Edge/Chromium locator
+│           ├── delay.js          # Asynchronous sleep helper
+│           ├── logger.js         # Timestamped file and console logger
+│           └── phoneFormatter.js # Phone normalizer (adds country code + @c.us)
 │
-└── frontend/                     # নেক্সট জেএস ফ্রন্টএন্ড ড্যাশবোর্ড
-    ├── package.json              # ফ্রন্টএন্ড ডিপেনডেন্সিসমূহ
-    ├── tailwind.config.js        # কাস্টম কালার ও অ্যানিমেশন থিম
-    ├── tsconfig.json
+└── frontend/                     # Next.js 14 Web Application
+    ├── package.json              # Frontend dependencies and build scripts
+    ├── tailwind.config.js        # Web3 dark theme, glow effects, and color tokens
+    ├── tsconfig.json             # TypeScript configuration
     └── src/
         ├── app/
-        │   ├── layout.tsx        # রুট লেআউট ও ফন্ট
-        │   ├── globals.css       # গ্লোবাল গ্লাস-মরফিজম ও ডার্ক থিম সিএসএস
-        │   ├── page.tsx          # রিডাইরেক্ট টু /dashboard
+        │   ├── layout.tsx        # Root HTML layout with Google Inter typography
+        │   ├── globals.css       # Custom scrollbars, glassmorphism, and neon glow utility classes
+        │   ├── page.tsx          # Root redirect to /dashboard
         │   └── dashboard/
-        │       └── page.tsx      # মেইন ড্যাশবোর্ড (সিঙ্গেল, বাল্ক ও অটো-রিপ্লাই)
+        │       └── page.tsx      # Main dashboard with segmented Tri-Mode switcher
         ├── components/
-        │   ├── AutoReplyManager.tsx       # অটো-রিপ্লাই কনফিগ প্যানেল
-        │   ├── CampaignControls.tsx       # বাল্ক ক্যাম্পেইন স্টার্ট ও প্রগ্রেস
-        │   ├── ContactsTable.tsx          # ইমপোর্টেড লিড টেবিল
-        │   ├── CSVUploader.tsx            # ড্র্যাগ অ্যান্ড ড্রপ CSV আপলোডার
-        │   ├── FloatingWhatsAppSimulator.tsx # লাইভ হোয়াটসঅ্যাপ প্রিভিউ চ্যাট
-        │   ├── LeadFinderModal.tsx        # গুগল ম্যাপস লিড ফাইন্ডার মোডাল
-        │   ├── MediaUploader.tsx          # মিডিয়া অ্যাটাচমেন্ট বক্স
-        │   ├── MessageEditor.tsx          # মেসেজ কম্পোজার ও নিশ টেমপ্লেট
-        │   ├── SingleMessageSender.tsx    # ডাইরেক্ট সিঙ্গেল মেসেজ ডিসপ্যাচার
-        │   ├── WhatsAppPreview.tsx        # প্রিভিউ কার্ড
-        │   ├── WhatsAppStatusModal.tsx    # কিউআর স্ক্যানার ও সেশন কন্ট্রোলার
-        │   └── ui/                        # বাটন, ইনপুট, কার্ড, ডায়লগ কম্পোনেন্টস
+        │   ├── AutoReplyManager.tsx       # Live auto-reply settings, logs, and cooldowns
+        │   ├── CampaignControls.tsx       # Bulk blast progress bar, stats, and controls
+        │   ├── ContactsTable.tsx          # Contact preview, editing, and CSV display
+        │   ├── CSVUploader.tsx            # Drag-and-drop CSV importer
+        │   ├── FloatingWhatsAppSimulator.tsx # Real-time floating mobile phone preview
+        │   ├── LeadFinderModal.tsx        # Google Maps lead extraction modal
+        │   ├── MediaUploader.tsx          # Image & document attachment interface
+        │   ├── MessageEditor.tsx          # Template composer with tag replacement
+        │   ├── SingleMessageSender.tsx    # Single direct message dispatcher
+        │   ├── WhatsAppPreview.tsx        # Message rendering card
+        │   ├── WhatsAppStatusModal.tsx    # QR scanner, session reset, and status modal
+        │   └── ui/                        # Reusable buttons, inputs, dialogs, badges
         ├── config/
-        │   └── categoryTemplates.ts       # ১৫+ ক্যাটাগরির রেডিমেড মার্কেটিং টেমপ্লেট
+        │   └── categoryTemplates.ts       # 15+ pre-written marketing templates
         ├── lib/
-        │   └── api.ts                     # ব্যাকএন্ড API হেল্পার ফাংশনসমূহ
+        │   └── api.ts                     # Axios API client functions with extended timeouts
         └── types/
 ```
 
 ---
 
-## 4. ফিচারসমূহ ও তাদের কাজের ধরন (Key Features Breakdown)
+## 4. Core Features & Engineering Logic
 
-### ১. ডাইরেক্ট সিঙ্গেল মেসেজিং (Direct Single Message):
-- কোনো কন্টাক্ট সেভ না করেই সরাসরি যেকোনো ভারতীয় বা আন্তর্জাতিক নম্বরে মেসেজ পাঠানোর সুবিধা।
-- মেসেজে `{{name}}` এবং `{{phone}}` ভেরিয়েবল ডায়নামিক্যালি প্রতিস্থাপন হয়।
+### 1. Direct Single Dispatch
+- Sends WhatsApp messages instantly to any number without saving the contact in your phone address book.
+- Automatically handles variable replacement: `{{name}}` with recipient name and `{{phone}}` with phone number.
+- Fast optimistic verification fallback prevents UI locks.
 
-### ২. বাল্ক ক্যাম্পেইন ব্লাস্ট ও অ্যান্টি-ব্যান গার্ড (Bulk Blast & Anti-Ban):
-- একসাথে ২০টি কন্টাক্টে শিডিউল করে ক্যাম্পেইন চালানো যায়।
-- WhatsApp যেন স্প্যাম হিসেবে অ্যাকাউন্ট ব্যান না করে, সেজন্য প্রতিটি মেসেজের মাঝে **২৫ থেকে ৪৫ সেকেন্ড র‍্যান্ডম ডিলে** দেওয়া হয়।
+### 2. Bulk Blast Campaign Engine with Anti-Ban Shield
+- Accepts parsed CSV files or leads imported directly from the Google Maps Lead Finder.
+- **Anti-Ban Protection**: Dispatches messages sequentially with randomized delays of **25 to 45 seconds** between recipients.
+- Real-time campaign tracking via polling `GET /api/campaigns/:id`.
 
-### ৩. লোকাল লিড ফাইন্ডার (Google Maps Lead Finder):
-- `Serper.dev` API-এর মাধ্যমে যেকোনো ক্যাটাগরি (যেমন: *Bakery, Gym, Salon, Real Estate*) ও লোকেশন দিয়ে সার্চ করলে রিয়েল বিজনেসের ফোন নম্বর বের করে আনে।
-- এক ক্লিকে সেই নম্বরগুলোকে সরাসরি বাল্ক ক্যাম্পেইনে ইমপোর্ট করা যায়।
+### 3. Local Lead Finder (Google Maps Integration)
+- Connects to Serper.dev Places API (`POST https://google.serper.dev/maps`).
+- Queries target categories (e.g. `Bakery`, `Gym`, `Real Estate`, `Dentist`) across specified locations.
+- Extracts verified phone numbers, business names, addresses, ratings, and reviews.
+- Allows 1-click import into the Bulk Blast contacts queue with matching category outreach templates.
 
-### ৪. অটোনোমাস অটো-রিপ্লাই ইঞ্জিন (Smart Auto-Reply):
-- ইনবাউন্ড কাস্টমার মেসেজ আসলে স্বয়ংক্রিয়ভাবে পোর্টফোলিও বা থ্যাঙ্ক ইউ মেসেজ রিপ্লাই করে।
-- **২৪ ঘণ্টার লুপ প্রোটেকশন (Cooldown)** যাতে একই কাস্টমারকে বারবার রিপ্লাই দিয়ে বিরক্ত না করে।
+### 4. Smart Auto-Reply Engine
+- Intercepts incoming messages and automatically replies with a customizable portfolio or introductory template.
+- **24-Hour Cooldown Filter**: Prevents repetitive loops by ensuring each unique contact receives only one automated response within the specified cooldown window.
+- **Historical Chat Filter**: Disregards historical unread messages synced upon initial login, responding only to live inbound traffic.
+- **Default Disabled**: Initial state is set to `enabled: false` to avoid unintended outbound dispatches on startup.
 
 ---
 
-## 5. স্ক্র্যাচ থেকে নতুন প্রজেক্ট তৈরির স্টেপ-বাই-স্টেপ গাইড (Step-by-Step Local Setup)
+## 5. Step-by-Step Guide to Building From Scratch
 
-### স্টেপ ১: ফোল্ডার তৈরি ও রুট এনভায়রনমেন্ট
-একটি নতুন ফোল্ডার তৈরি করে রুট ডিরেক্টরিতে `.env` ফাইল তৈরি করুন:
+### Step 1: Initialize Root Directory & Environment
+Create a root folder and a `.env` file:
+```bash
+mkdir whatsapp-automation
+cd whatsapp-automation
+```
+
+Create `.env` in the root:
 ```env
 PORT=4000
 DEFAULT_COUNTRY_CODE=91
 WHATSAPP_HEADLESS=true
-SERPER_API_KEY=your_serper_api_key_here
+SERPER_API_KEY=your_serper_dev_api_key_here
 ```
-*(Serper API কী ফ্রিতে [https://serper.dev](https://serper.dev)-এ সাইন আপ করে নিতে পারবেন)*
+*(Get a free API key at [https://serper.dev](https://serper.dev))*
 
 ---
 
-### স্টেপ ২: ব্যাকএন্ড প্রজেক্ট ইনিশিয়ালাইজ ও প্যাকেজ ইনস্টলেশন
+### Step 2: Initialize & Configure Backend
 ```bash
 mkdir backend
 cd backend
 npm init -y
 ```
 
-`backend/package.json`-এ প্রয়োজনীয় ডিপেনডেন্সি ইনস্টল করুন:
+Install backend dependencies:
 ```bash
 npm install express cors dotenv axios multer mime-types uuid qrcode-terminal puppeteer whatsapp-web.js@github:pedroslopez/whatsapp-web.js
 npm install --save-dev nodemon
 ```
 
-`package.json`-এর `scripts` সেকশনে যোগ করুন:
+Configure scripts in `backend/package.json`:
 ```json
 "scripts": {
   "start": "node src/index.js",
@@ -192,14 +209,14 @@ npm install --save-dev nodemon
 
 ---
 
-### স্টেপ ৩: ফ্রন্টএন্ড প্রজেক্ট তৈরি (Next.js 14)
-রুট ডিরেক্টরি থেকে ফ্রন্টএন্ড তৈরি করুন:
+### Step 3: Initialize & Configure Frontend (Next.js 14)
+From the root directory:
 ```bash
 npx create-next-app@14 frontend --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm
 cd frontend
 ```
 
-ফ্রন্টএন্ডের জন্য প্রয়োজনীয় লাইব্রেরিসমূহ ইনস্টল করুন:
+Install frontend dependencies:
 ```bash
 npm install axios framer-motion lucide-react qrcode.react papaparse canvas-confetti clsx tailwind-merge
 npm install --save-dev @types/papaparse @types/canvas-confetti
@@ -207,36 +224,43 @@ npm install --save-dev @types/papaparse @types/canvas-confetti
 
 ---
 
-### স্টেপ ৪: লোকাল প্রজেক্ট রান করার নিয়ম
-সর্বদা দুটি টার্মিনাল ওপেন রাখুন:
+## 6. Local Execution & Environment Setup
 
-**টার্মিনাল ১ (Backend):**
+Run the backend and frontend simultaneously in separate terminals:
+
+### Terminal 1 — Backend:
 ```bash
 cd backend
 npm run dev
 ```
-*(সফলভাবে রান হলে কনসোলে আসবে: `Backend listening on http://localhost:4000`)*
+*Console output when ready:*
+```text
+[INFO] Found system browser binary: C:\Program Files\Google\Chrome\Application\chrome.exe
+[INFO] Initializing WhatsApp client (Headless: true)
+[INFO] Backend listening on http://localhost:4000
+```
 
-**টার্মিনাল ২ (Frontend):**
+### Terminal 2 — Frontend:
 ```bash
 cd frontend
 npm run dev
 ```
-*(ব্রাউজারে ওপেন করুন: [http://localhost:3000](http://localhost:3000))*
+*Open dashboard in browser:* **[http://localhost:3000](http://localhost:3000)**
 
 ---
 
-## 6. জরুরি কনফিগারেশন ও বেস্ট প্র্যাকটিস (Critical Configurations & Tips)
+## 7. Troubleshooting & Best Practices
 
-1. **লোকাল ক্রোম পাথ ডিটেকশন**:
-   - উইন্ডোজে Puppeteer অনেক সময় ক্রোম খুঁজে পায় না। সেজন্য `chromeFinder.js`-এর মতো হেল্পার ব্যবহার করে `C:\Program Files\Google\Chrome\Application\chrome.exe` পাথ নিশ্চিত করা হয়েছে।
-2. **অটো-রিপ্লাই ডিফল্ট অফ রাখা**:
-   - `autoReplyConfig.json`-এ সর্বদা `"enabled": false` রাখা উচিত, যাতে সার্ভার চালুর সাথে সাথে পুরনো বন্ধুদের কাছে মেসেজ না যায়।
-3. **সেশন ব্যাকআপ ও রিসেট**:
-   - সেশন নষ্ট হলে বা লগআউট করতে চাইলে `backend/.wwebjs_auth` ফোল্ডারটি ডিলিট করে সার্ভার রিস্টার্ট করলেই নতুন ফ্রেশ QR কোড চলে আসবে।
-4. **অ্যান্টি-ব্যান টিপস**:
-   - প্রতিদিন নতুন নম্বরে ৫০টির বেশি মেসেজ পাঠানো এড়িয়ে চলুন।
-   - প্রতি ব্যাচে সর্বোচ্চ ১৫-২০টি মেসেজ পাঠান এবং মেসেজের ডিলে ২৫-৪৫ সেকেন্ড রাখুন।
+1. **Chrome Binary Resolution**:
+   - `whatsappService.js` uses `chromeFinder.js` to automatically verify local paths like `C:\Program Files\Google\Chrome\Application\chrome.exe` on Windows and `/usr/bin/google-chrome` on Linux.
+2. **Session Reset & Unlinking**:
+   - If a session becomes corrupted or desynchronized, click **Reset Session** in the dashboard modal or delete the `backend/.wwebjs_auth` folder and restart the server.
+3. **Process Protection**:
+   - `index.js` includes global `uncaughtException` and `unhandledRejection` handlers to prevent server termination during network interruptions or browser reloads.
+4. **Anti-Ban Safety Guidelines**:
+   - Limit outbound cold outreach to 40–50 messages per day per WhatsApp number.
+   - Maintain the default 25–45s interval delay between recipients during bulk campaigns.
+   - Use variable personalization (`{{name}}`) so every outbound message is unique.
 
 ---
-*Created for Suraj Banerjee — WhatsApp Outreach & Automation Suite.*
+*Created for Suraj Banerjee — WhatsApp Automation Suite.*
