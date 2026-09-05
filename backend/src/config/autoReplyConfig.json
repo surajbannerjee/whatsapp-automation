@@ -1,5 +1,5 @@
 {
-  "enabled": true,
+  "enabled": false,
   "template": "Hey! 👋 Thanks for reaching out. Got your message!\n\nI'll get back to you personally in just a little bit.\n\nMeanwhile, you can take a look at my portfolio to see how I help local brands build modern, fast websites:\n🔗 https://suraj-banerjee.vercel.app/\n\nIf it's urgent or you'd prefer a direct call, feel free to ring me at 9609618271. Speak soon!",
   "cooldownHours": 24
 }
