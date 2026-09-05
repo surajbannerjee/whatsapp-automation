@@ -4,11 +4,9 @@ import { motion } from "framer-motion"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
-import { Badge } from "./ui/badge"
 import { verifyNumber, sendSingleMessage, getWhatsAppStatus } from "@/lib/api"
 import { 
   Send, 
-  Smartphone, 
   CheckCircle2, 
   AlertCircle, 
   Loader2, 
@@ -16,8 +14,7 @@ import {
   User, 
   Phone, 
   CheckCircle, 
-  Zap,
-  Sparkles
+  Zap
 } from "lucide-react"
 
 interface SingleMessageSenderProps {
@@ -28,7 +25,7 @@ interface SingleMessageSenderProps {
   onPhoneChange?: (phone: string) => void
 }
 
-type VerificationStatus = "idle" | "checking" | "verified" | "not_registered" | "error"
+type VerificationStatus = "idle" | "checking" | "verified" | "not_registered" | "error" | "skipped"
 
 export default function SingleMessageSender({
   message,
@@ -52,7 +49,7 @@ export default function SingleMessageSender({
     const checkClient = async () => {
       try {
         const s = await getWhatsAppStatus()
-        setIsClientConnected(s.isReady || s.status === "ready")
+        setIsClientConnected(Boolean(s.isReady || s.status === "ready" || s.status === "authenticated"))
       } catch {
         setIsClientConnected(false)
       }
@@ -78,7 +75,7 @@ export default function SingleMessageSender({
     if (digitsOnly.length >= 10) {
       debounceTimerRef.current = setTimeout(() => {
         performVerification(val)
-      }, 600)
+      }, 700)
     }
   }
 
@@ -108,14 +105,21 @@ export default function SingleMessageSender({
         setFormattedPhone(res.formattedPhone || null)
       }
     } catch (err: any) {
-      console.error("Verification failed:", err)
-      setVerificationStatus("error")
-      setErrorMessage(err.response?.data?.error || err.message || "Failed to verify number")
+      console.warn("Verification warning:", err)
+      setVerificationStatus("skipped")
+      setErrorMessage(
+        err.message?.includes("timeout")
+          ? "Server response took long. You can still send the message directly."
+          : (err.response?.data?.error || err.message || "Could not verify number")
+      )
     }
   }
 
   const handleSend = async () => {
-    if (verificationStatus !== "verified") return
+    if (!phone.trim()) {
+      setErrorMessage("Please enter a recipient phone number")
+      return
+    }
     if (!message.trim()) {
       setErrorMessage("Please write a message before sending")
       return
@@ -144,6 +148,7 @@ export default function SingleMessageSender({
           messageId: res.messageId,
           timestamp: res.timestamp
         })
+        setVerificationStatus("verified")
       }
     } catch (err: any) {
       console.error("Failed to send single message:", err)
@@ -154,10 +159,10 @@ export default function SingleMessageSender({
   }
 
   const isSendDisabled =
-    verificationStatus !== "verified" ||
+    !phone.trim() ||
     !message.trim() ||
     sending ||
-    !isClientConnected
+    verificationStatus === "not_registered"
 
   return (
     <motion.div
@@ -235,7 +240,7 @@ export default function SingleMessageSender({
               <div className="pt-0.5">
                 {verificationStatus === "idle" && (
                   <p className="text-[11px] text-slate-500">
-                    Type 10+ digits for automatic validation check
+                    Type 10+ digits for validation or click Send directly
                   </p>
                 )}
 
@@ -249,7 +254,7 @@ export default function SingleMessageSender({
                 {verificationStatus === "verified" && (
                   <div className="flex items-center gap-1.5 text-[11px] text-emerald-300 font-semibold bg-emerald-500/10 px-2.5 py-1 rounded-xl border border-emerald-500/30 shadow-glow-emerald animate-in fade-in">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    <span>Active on WhatsApp (+{formattedPhone})</span>
+                    <span>Active on WhatsApp (+{formattedPhone || phone})</span>
                   </div>
                 )}
 
@@ -260,7 +265,7 @@ export default function SingleMessageSender({
                   </div>
                 )}
 
-                {verificationStatus === "error" && errorMessage && (
+                {(verificationStatus === "error" || verificationStatus === "skipped") && errorMessage && (
                   <div className="flex items-center gap-1.5 text-[11px] text-amber-300 font-semibold bg-amber-500/10 px-2.5 py-1 rounded-xl border border-amber-500/30 animate-in fade-in">
                     <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
                     <span>{errorMessage}</span>
@@ -295,13 +300,13 @@ export default function SingleMessageSender({
           {/* Dispatch Action Bar */}
           <div className="pt-2 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="text-xs text-slate-400">
-              {verificationStatus !== "verified" ? (
-                <span className="text-amber-400/90 flex items-center gap-1">
-                  <AlertCircle className="w-3.5 h-3.5" /> Validate number to unlock dispatch
-                </span>
-              ) : (
+              {verificationStatus === "verified" ? (
                 <span className="text-emerald-400 font-semibold flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5" /> Ready for instant delivery
+                </span>
+              ) : (
+                <span className="text-slate-400 flex items-center gap-1">
+                  <Zap className="w-3.5 h-3.5 text-emerald-400" /> Direct dispatch enabled
                 </span>
               )}
             </div>

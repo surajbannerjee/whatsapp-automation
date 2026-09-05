@@ -4,6 +4,18 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config(); // fallback to local .env if any
+
+const logger = require('./utils/logger');
+
+// Catch-all safety handlers to prevent the backend process from ever dying unexpectedly
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught Exception: ' + (err.stack || err.message));
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection: ' + (reason?.stack || reason?.message || reason));
+});
 
 const app = express();
 app.use(cors());
@@ -19,10 +31,9 @@ const leadFinderRouter = require('./routes/leadFinder');
 const campaignManager = require('./services/campaignManager');
 const whatsappService = require('./services/whatsappService');
 
-// Initialize WhatsApp client (LocalAuth)
+// Initialize WhatsApp client (LocalAuth) safely in background
 whatsappService.initClient().catch(err => {
-  console.error('Failed to initialize WhatsApp client:', err);
-  process.exit(1);
+  logger.error('Background WhatsApp initialization notice: ' + err.message);
 });
 
 app.use('/uploads', express.static(path.resolve(__dirname, '../../uploads')));
@@ -49,6 +60,26 @@ app.get('/api/status', (req, res) => {
   return res.json(whatsappService.getStatus());
 });
 
+// WhatsApp manual reconnect endpoint
+app.post('/api/reconnect', async (req, res) => {
+  try {
+    whatsappService.reconnect();
+    return res.json({ success: true, message: 'Reconnection triggered' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// WhatsApp logout / reset endpoint
+app.post('/api/logout', async (req, res) => {
+  try {
+    await whatsappService.logout();
+    return res.json({ success: true, message: 'Logged out successfully' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // Campaign status endpoint
 app.get('/api/campaigns/:id', (req, res) => {
   const id = req.params.id;
@@ -57,6 +88,12 @@ app.get('/api/campaigns/:id', (req, res) => {
   return res.json(c);
 });
 
+// Global error handler
+app.use((err, req, res, next) => {
+  logger.error(`Express error at ${req.method} ${req.url}: ${err.message}`);
+  res.status(500).json({ error: err.message || 'Internal server error' });
+});
+
 app.listen(PORT, () => {
-  console.log(`Backend listening on http://localhost:${PORT}`);
+  logger.info(`Backend listening on http://localhost:${PORT}`);
 });

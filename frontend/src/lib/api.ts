@@ -3,9 +3,12 @@ import axios from 'axios'
 export const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000'
 
 export interface WhatsAppStatus {
-  status: 'initializing' | 'qr_ready' | 'authenticated' | 'ready' | 'disconnected' | 'auth_failure'
+  status: 'initializing' | 'qr_ready' | 'authenticated' | 'ready' | 'disconnected' | 'auth_failure' | 'error'
   qr: string | null
   isReady: boolean
+  error?: string | null
+  user?: string | null
+  pushname?: string | null
 }
 
 export interface CampaignResult {
@@ -80,13 +83,25 @@ export interface SearchLeadsResponse {
 
 export async function getWhatsAppStatus(): Promise<WhatsAppStatus> {
   const url = `${BACKEND_BASE_URL}/api/status`
-  const res = await axios.get(url, { timeout: 5000 })
+  const res = await axios.get(url, { timeout: 15000 })
+  return res.data
+}
+
+export async function reconnectWhatsApp(): Promise<{ success: boolean; message: string }> {
+  const url = `${BACKEND_BASE_URL}/api/reconnect`
+  const res = await axios.post(url, {}, { timeout: 15000 })
+  return res.data
+}
+
+export async function logoutWhatsApp(): Promise<{ success: boolean; message: string }> {
+  const url = `${BACKEND_BASE_URL}/api/logout`
+  const res = await axios.post(url, {}, { timeout: 15000 })
   return res.data
 }
 
 export async function verifyNumber(phone: string): Promise<VerifyNumberResponse> {
   const url = `${BACKEND_BASE_URL}/api/verify-number`
-  const res = await axios.post(url, { phone }, { timeout: 8000 })
+  const res = await axios.post(url, { phone }, { timeout: 25000 })
   return res.data
 }
 
@@ -96,7 +111,7 @@ export async function sendSingleMessage(payload: {
   mediaUrl?: string
 }): Promise<SendSingleResponse> {
   const url = `${BACKEND_BASE_URL}/api/send-single`
-  const res = await axios.post(url, payload, { timeout: 15000 })
+  const res = await axios.post(url, payload, { timeout: 30000 })
   return res.data
 }
 
@@ -122,31 +137,31 @@ export async function uploadMedia(file: File): Promise<{ url: string }> {
 
 export async function getCampaign(id: string): Promise<CampaignData> {
   const url = `${BACKEND_BASE_URL}/api/campaigns/${id}`
-  const res = await axios.get(url, { timeout: 5000 })
+  const res = await axios.get(url, { timeout: 15000 })
   return res.data
 }
 
 export async function getAutoReplyStats(): Promise<AutoReplyStatsResponse> {
   const url = `${BACKEND_BASE_URL}/api/auto-reply/config`
-  const res = await axios.get(url, { timeout: 5000 })
+  const res = await axios.get(url, { timeout: 15000 })
   return res.data
 }
 
 export async function updateAutoReplyConfig(updates: Partial<AutoReplyConfig>): Promise<{ success: boolean; config: AutoReplyConfig }> {
   const url = `${BACKEND_BASE_URL}/api/auto-reply/config`
-  const res = await axios.post(url, updates, { timeout: 5000 })
+  const res = await axios.post(url, updates, { timeout: 15000 })
   return res.data
 }
 
 export async function clearAutoReplyCooldowns(): Promise<{ success: boolean; clearedCount: number }> {
   const url = `${BACKEND_BASE_URL}/api/auto-reply/clear-history`
-  const res = await axios.post(url, {}, { timeout: 5000 })
+  const res = await axios.post(url, {}, { timeout: 15000 })
   return res.data
 }
 
 export async function searchLeads(category: string, location: string, apiKey?: string): Promise<SearchLeadsResponse> {
   const url = `${BACKEND_BASE_URL}/api/leads/search`
-  const res = await axios.post(url, { category, location, apiKey }, { timeout: 20000 })
+  const res = await axios.post(url, { category, location, apiKey }, { timeout: 30000 })
   return res.data
 }
 
