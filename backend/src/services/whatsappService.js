@@ -17,6 +17,17 @@ let reconnectTimeout = null;
 
 const authDataPath = path.resolve(__dirname, '../../.wwebjs_auth');
 
+function isClientConnected() {
+  return Boolean(client && currentStatus === 'ready' && client.info);
+}
+
+function clearPendingReconnect() {
+  if (reconnectTimeout) {
+    clearTimeout(reconnectTimeout);
+    reconnectTimeout = null;
+  }
+}
+
 async function initClient(forceNew = false) {
   if (isInitializing && !forceNew) {
     logger.info('WhatsApp client initialization already in progress...');
@@ -24,24 +35,20 @@ async function initClient(forceNew = false) {
   }
 
   if (client && isClientConnected() && !forceNew) {
-    logger.info('WhatsApp client is already connected.');
+    logger.info('WhatsApp client is already connected and ready.');
     return client;
   }
 
+  clearPendingReconnect();
   isInitializing = true;
   currentStatus = 'initializing';
   lastError = null;
   lastQr = null;
 
-  if (reconnectTimeout) {
-    clearTimeout(reconnectTimeout);
-    reconnectTimeout = null;
-  }
-
   // Cleanup existing client safely
   if (client) {
     try {
-      logger.info('Destroying previous WhatsApp client instance...');
+      logger.info('Cleaning up previous WhatsApp client instance...');
       await client.destroy().catch(() => {});
     } catch (e) {
       // ignore
@@ -81,6 +88,7 @@ async function initClient(forceNew = false) {
     });
 
     client.on('qr', (qr) => {
+      clearPendingReconnect();
       currentStatus = 'qr_ready';
       lastQr = qr;
       lastError = null;
@@ -93,11 +101,13 @@ async function initClient(forceNew = false) {
     });
 
     client.on('loading_screen', (percent, message) => {
+      clearPendingReconnect();
       logger.info(`WhatsApp sync: ${percent}% - ${message || 'Loading'}`);
       currentStatus = 'authenticated';
     });
 
     client.on('authenticated', () => {
+      clearPendingReconnect();
       currentStatus = 'authenticated';
       lastQr = null;
       lastError = null;
@@ -105,6 +115,7 @@ async function initClient(forceNew = false) {
     });
 
     client.on('ready', () => {
+      clearPendingReconnect();
       currentStatus = 'ready';
       lastQr = null;
       lastError = null;
@@ -126,16 +137,15 @@ async function initClient(forceNew = false) {
       isInitializing = false;
       logger.warn('WhatsApp client disconnected: ' + reason);
 
-      // Auto-reinitialize after 8 seconds
-      if (!reconnectTimeout) {
-        reconnectTimeout = setTimeout(() => {
-          reconnectTimeout = null;
-          logger.info('Attempting automatic WhatsApp reconnection...');
-          initClient(true).catch(err => {
-            logger.error('Auto-reconnect error: ' + err.message);
-          });
-        }, 8000);
-      }
+      // Auto-reinitialize after unexpected disconnect
+      clearPendingReconnect();
+      reconnectTimeout = setTimeout(() => {
+        reconnectTimeout = null;
+        logger.info('Attempting automatic WhatsApp reconnection after disconnect...');
+        initClient(true).catch(err => {
+          logger.error('Auto-reconnect error: ' + err.message);
+        });
+      }, 10000);
     });
 
     // Listen to incoming messages for auto-reply
@@ -148,7 +158,17 @@ async function initClient(forceNew = false) {
       }
     });
 
-    await client.initialize();
+    try {
+      await client.initialize();
+    } catch (initErr) {
+      if (initErr.message && (initErr.message.includes('Execution context was destroyed') || initErr.message.includes('Protocol error'))) {
+        logger.warn('Initial navigation reload detected, waiting for page stabilization...');
+        await new Promise(r => setTimeout(r, 3000));
+        await client.initialize().catch(e => { throw e; });
+      } else {
+        throw initErr;
+      }
+    }
     isInitializing = false;
     return client;
   } catch (err) {
@@ -156,22 +176,8 @@ async function initClient(forceNew = false) {
     currentStatus = 'error';
     lastError = err.message || 'Failed to initialize client';
     logger.error(`WhatsApp initialization error: ${lastError}`);
-    
-    // Schedule a retry after 15s if it failed completely
-    if (!reconnectTimeout) {
-      reconnectTimeout = setTimeout(() => {
-        reconnectTimeout = null;
-        logger.info('Retrying WhatsApp client initialization...');
-        initClient(true).catch(e => logger.error('Retry failed: ' + e.message));
-      }, 15000);
-    }
-
     return null;
   }
-}
-
-function isClientConnected() {
-  return Boolean(client && (currentStatus === 'ready' || currentStatus === 'authenticated' || client.info));
 }
 
 function getStatus() {
@@ -187,11 +193,13 @@ function getStatus() {
 
 async function reconnect() {
   logger.info('Manual WhatsApp reconnection requested');
+  clearPendingReconnect();
   return await initClient(true);
 }
 
 async function logout() {
   logger.info('WhatsApp logout requested');
+  clearPendingReconnect();
   try {
     if (client) {
       await client.logout().catch(() => {});
@@ -203,21 +211,21 @@ async function logout() {
   }
   currentStatus = 'disconnected';
   lastQr = null;
-  // Reinitialize to get a fresh QR code
   setTimeout(() => {
     initClient(true).catch(e => logger.error('Re-init after logout error: ' + e.message));
-  }, 1000);
+  }, 1500);
   return { success: true };
 }
 
 async function isRegisteredNumber(number) {
-  if (!isClientConnected()) throw new Error('WhatsApp client not initialized');
+  if (!isClientConnected()) return true;
   try {
-    const checkPromise = client.isRegisteredUser(number);
+    const formattedJid = formatPhoneToWhatsApp(number);
+    const checkPromise = client.isRegisteredUser(formattedJid);
     const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(true), 4000));
     return await Promise.race([checkPromise, timeoutPromise]);
   } catch (e) {
-    logger.warn(`isRegisteredUser check fallback for ${number}: ${e.message}`);
+    logger.warn(`isRegisteredNumber check fallback for ${number}: ${e.message}`);
     return true;
   }
 }
@@ -243,19 +251,23 @@ async function fetchMediaAsMessageMedia(url) {
 }
 
 async function sendMessage(number, message, mediaUrl) {
-  if (!isClientConnected()) throw new Error('WhatsApp client is not connected');
+  if (!client || currentStatus !== 'ready') {
+    throw new Error('WhatsApp client is not ready. Please wait a few seconds or scan the QR code to pair.');
+  }
+
+  const formattedJid = formatPhoneToWhatsApp(number);
 
   if (mediaUrl) {
     const media = await fetchMediaAsMessageMedia(mediaUrl);
-    return client.sendMessage(number, media, { caption: message });
+    return await client.sendMessage(formattedJid, media, { caption: message });
   }
 
-  return client.sendMessage(number, message);
+  return await client.sendMessage(formattedJid, message);
 }
 
 async function verifyNumber(rawPhone) {
-  if (!isClientConnected()) {
-    throw new Error('WhatsApp client is not connected. Please pair your device first.');
+  if (!client || (currentStatus !== 'ready' && currentStatus !== 'authenticated')) {
+    throw new Error('WhatsApp client is not connected. Please scan QR code to pair your device.');
   }
 
   const formattedJid = formatPhoneToWhatsApp(rawPhone);
@@ -277,8 +289,8 @@ async function verifyNumber(rawPhone) {
 }
 
 async function sendSingleMessage({ phone, message, mediaUrl }) {
-  if (!isClientConnected()) {
-    throw new Error('WhatsApp client is not connected. Please pair your device first.');
+  if (!client || currentStatus !== 'ready') {
+    throw new Error('WhatsApp client is not ready. Please wait a few moments for chat sync to complete.');
   }
 
   const formattedJid = formatPhoneToWhatsApp(phone);
